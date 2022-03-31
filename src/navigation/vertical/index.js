@@ -29,11 +29,6 @@ const modules = [
     route: 'uptime',
   },
   {
-    scope: 'normal',
-    title: 'statesync',
-    route: 'statesync',
-  },
-  {
     scope: 'cos-mos',
     title: 'gravity',
     route: 'gravity',
