@@ -1,5 +1,14 @@
 <template>
   <div>
+  <b-card
+    no-body
+    class="text-truncate"
+  >
+    <b-card-header>
+      <b-card-title>
+        Transactions
+      </b-card-title>
+    </b-card-header>
     <b-table
       :items="history"
       :fields="list_fields"
@@ -26,8 +35,9 @@
       </template>
       <template #cell(txs)="data">
         {{ length(data.item.block.data.txs) }}
-      </template>
-    </b-table>
+        </template>
+      </b-table>
+    </b-card>
   </div>
 </template>
 
