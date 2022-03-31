@@ -1,7 +1,7 @@
 {
     "chain_name": "bostrom",
     "coingecko": "",
-    "api": "https://cyber.postcapitalist.io",
+    "api": ["https://lcd.bostrom.cybernode.ai", "https://cyber.postcapitalist.io"],
     "sdk_version": "0.44.3",
     "coin_type": "118",
     "min_tx_fee": "5000",
@@ -11,7 +11,7 @@
         "base": "boot",
         "symbol": "BOOT",
         "exponent": "0",
-        "coingecko_id": "", 
+        "coingecko_id": "",
         "logo": "https://ipfs.infura.io/ipfs/QmSVz41kA5aXttxT1rAXnuJecfazij3wh95X8ewd7Kdc2F"
     }]
 }
