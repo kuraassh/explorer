@@ -1,41 +1,42 @@
 <template>
   <div>
-  <b-card
-    no-body
-    class="text-truncate"
-  >
-    <b-card-header>
-      <b-card-title>
-        Transactions
-      </b-card-title>
-    </b-card-header>
-    <b-table
-      :items="history"
-      :fields="list_fields"
-      :sort-desc="true"
-      sort-by="blocks"
-      striped
-      hover
-      stacked="sm"
+    <b-card
+      no-body
+      class="text-truncate"
     >
-      <!-- Column: Height -->
-      <template #cell(height)="data">
-        <router-link :to="`./blocks/${data.item.block.header.height}`">
-          {{ data.item.block.header.height }}
-        </router-link>
-      </template>
-      <template #cell(hash)="data">
-        <small>{{ data.item.block_id.hash }}</small>
-      </template>
-      <template #cell(time)="data">
-        {{ formatTime(data.item.block.header.time) }}
-      </template>
-      <template #cell(proposer)="data">
-        {{ formatProposer(data.item.block.header.proposer_address) }}
-      </template>
-      <template #cell(txs)="data">
-        {{ length(data.item.block.data.txs) }}
+      <b-card-header>
+        <b-card-title>
+          Blocks
+        </b-card-title>
+      </b-card-header>
+      <b-table
+        :items="transactions"
+        :fields="list_fields"
+        :sort-desc="true"
+        sort-by="blocks"
+        striped
+        hover
+        stacked="sm"
+      >
+        <!-- Column: Height -->
+        <template #cell(height)="data">
+          <router-link :to="`./blocks/${data.item.block.header.height}`">
+            {{ data.item.block.header.height }}
+          </router-link>
         </template>
+        <template #cell(hash)="data">
+          <small>{{ data.item.block_id.hash }}</small>
+        </template>
+        <template #cell(time)="data">
+          {{ formatTime(data.item.block.header.time) }}
+        </template>
+        <template #cell(proposer)="data">
+          {{ formatProposer(data.item.block.header.proposer_address) }}
+        </template>
+        <template #cell(txs)="data">
+          {{ length(data.item.block.data.txs) }}
+        </template>
+
       </b-table>
     </b-card>
   </div>
@@ -43,35 +44,95 @@
 
 <script>
 import {
-  VBTooltip, BTable,
+  BTable, BCard, BCardHeader, BCardTitle, VBTooltip,
 } from 'bootstrap-vue'
-import { getLocalTxHistory } from '@/libs/utils'
+import {
+  getCachedValidators,
+  getStakingValidatorByHex,
+  toDay,
+} from '@/libs/utils'
+// import fetch from 'node-fetch'
 
 export default {
   components: {
+    BCard,
     BTable,
+    BCardHeader,
+    BCardTitle,
   },
   directives: {
     'b-tooltip': VBTooltip,
   },
   data() {
     return {
-      fields: [
-        { key: 'chain', label: 'BLOCKCHAIN' },
-        { key: 'op', label: 'ACTION' },
-        { key: 'hash', label: 'TX HASH' },
-        { key: 'time', label: 'TIME' },
+      islive: true,
+      blocks: [],
+      list_fields: [
+        {
+          key: 'height',
+          sortable: true,
+        },
+        {
+          key: 'hash',
+          thClass: 'd-none d-lg-block',
+          tdClass: 'd-none d-lg-block text-truncate',
+        },
+        {
+          key: 'proposer',
+          tdClass: 'text-truncate',
+        },
+        {
+          key: 'txs',
+        },
+        {
+          key: 'time',
+          thClass: 'd-none d-md-block',
+          tdClass: 'd-none d-md-block',
+        },
       ],
-      history: [],
     }
   },
   created() {
-    this.history = getLocalTxHistory()
+    this.$http.getLatestBlock().then(res => {
+      this.blocks.push(res)
+      const list = []
+      const { height } = res.block.header
+      for (let i = 1; i < 20; i += 1) {
+        list.push(height - i)
+      }
+
+      if (!getCachedValidators()) {
+        this.$http.getValidatorList()
+      }
+
+      let promise = Promise.resolve()
+      list.forEach(item => {
+        promise = promise.then(() => new Promise(resolve => {
+          this.$http.getBlockByHeight(item).then(b => {
+            resolve()
+            this.blocks.push(b)
+          })
+        }))
+      })
+      this.timer = setInterval(this.fetch, 6000)
+    })
+  },
+  beforeDestroy() {
+    this.islive = false
+    clearInterval(this.timer)
   },
   methods: {
-    clear() {
-      this.history = []
-      localStorage.setItem('txHistory', [])
+    length: v => (Array.isArray(v) ? v.length : 0),
+    formatTime: v => toDay(v, 'time'),
+    formatProposer(v) {
+      return getStakingValidatorByHex(this.$http.config.chain_name, v)
+    },
+    fetch() {
+      this.$http.getLatestBlock().then(b => {
+        const has = this.blocks.findIndex(x => x.block.header.height === b.block.header.height)
+        if (has < 0) this.blocks.unshift(b)
+        if (this.blocks.length > 200) this.blocks.pop()
+      })
     },
   },
 }
