@@ -33,13 +33,13 @@
 
 <script>
 import {
-  VBTooltip, BTable, BAvatar, BButton,
+  VBTooltip, BTable,
 } from 'bootstrap-vue'
 import { getLocalTxHistory } from '@/libs/utils'
 
 export default {
   components: {
-    BTable, BAvatar, BButton,
+    BTable,
   },
   directives: {
     'b-tooltip': VBTooltip,
