@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "analyz": "vue-cli-service build --report"
   },
   "dependencies": {
     "@casl/ability": "4.1.6",
@@ -18,7 +19,7 @@
     "@cosmjs/math": "^0.26.5",
     "@cosmjs/proto-signing": "^0.26.5",
     "@cosmjs/stargate": "0.26.5",
-    "@cosmostation/cosmosjs": "^0.10.6",
+    "@cosmostation/cosmosjs": "^0.11.2",
     "@intlify/vue-i18n-loader": "^2.1.2",
     "@ledgerhq/hw-app-cosmos": "^6.3.0",
     "@ledgerhq/hw-transport-web-ble": "^6.3.0",
@@ -31,15 +32,19 @@
     "axios-mock-adapter": "1.19.0",
     "bootstrap": "4.6.0",
     "bootstrap-vue": "2.21.1",
+    "buffer": "^6.0.3",
     "chart.js": "2.9.4",
     "compare-versions": "^3.6.0",
     "core-js": "3.8.1",
     "cosmjs-types": "^0.2.0",
     "dayjs": "^1.10.6",
     "echarts": "5.3.0",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
     "leaflet": "1.6.0",
     "ledger-cosmos-js": "2.1.8",
     "long": "^5.2.0",
+    "net": "^1.0.2",
     "node-fetch": "^2.6.5",
     "pako": "^1.0.11",
     "portal-vue": "2.1.7",
@@ -48,8 +53,11 @@
     "protobufjs-cli-dbx": "^7.0.7",
     "protobufjs-dbx": "^7.0.0",
     "ripemd160": "^2.0.2",
+    "stream": "^0.0.2",
     "swiper": "6.5.1",
     "trading-vue-js": "^1.0.2",
+    "url": "^0.11.0",
+    "util": "^0.12.4",
     "uuid": "8.3.2",
     "vee-validate": "3.4.5",
     "vue": "2.x",
@@ -81,7 +89,8 @@
     "vue2-flip-countdown": "^0.12.1",
     "vue2-leaflet": "2.5.2",
     "vuedraggable": "2.24.3",
-    "vuex": "3.6.0"
+    "vuex": "3.6.0",
+    "zlib": "^1.0.5"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.9",
@@ -92,11 +101,13 @@
     "@vue/eslint-config-airbnb": "^5.3.0",
     "@vuepress/plugin-medium-zoom": "^1.7.1",
     "babel-eslint": "^10.0.3",
+    "compression-webpack-plugin": "6.1.1",
     "eslint": "6.8.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-vue": "6.2.2",
     "sass": "1.32.*",
     "sass-loader": "^10.1.0",
-    "vue-template-compiler": "2.x"
+    "vue-template-compiler": "2.x",
+    "webpack-bundle-analyzer": "^4.5.0"
   }
 }

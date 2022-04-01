@@ -1,7 +1,7 @@
 {
     "chain_name": "bitsong",
     "coingecko": "bitsong",
-    "api": "https://bitsong.postcapitalist.io",
+    "api": ["https://lcd.explorebitsong.com", "https://bitsong.postcapitalist.io"],
     "addr_prefix": "bitsong",
     "coin_type": "639",
     "min_tx_fee": "3500",
