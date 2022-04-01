@@ -2,7 +2,7 @@
   <div>
     <b-card
       v-if="pingVals && pingVals.length > 0"
-      title="❤️ Helping POSTCAPITALIST By Staking ❤️"
+      title="Let's help those in need together 🤍"
     >
       <b-table
         :items="pingVals"
@@ -247,10 +247,19 @@ export default {
   data() {
     return {
       keys: [
-        'bostromvaloper1zaefvwrgk2g45k68a3ngahgq0xky5zgeluu86f',
+        'bcnavaloper15dz9pjxqgzfz80fvkxscjksvz7u6r07x4k9esy',
+        'bitsongvaloper1slnkc2a8lhxgz5cc7lg9zlgzfedfpdve0rh2p6',
+        'certikvaloper1mrhq8lcrm96asw3jnk6sa0dm3qpwuqyt3r8uvn',
+        'gravityvaloper1wqe87574pzjdn5glrtr2h75r233tct73zgw524',
+        'injvaloper1get4y2tqyp047ftym76c4avl4remldtrrj9knt',
+        'kivaloper1tpjzxf34mm2kyt5t9w06tpe47d4d6mn7w09j2c',
+        'lumvaloper1zyl7dvudl9kvdx8qx30q37fhtauldayw5gf24r',
+        'rizonvaloper1ra2kdevuaf9drwkh0a62hat0nmsclylcp5c34j',
+        'ixovaloper1d92tfnkge6qcvt3jy42j0dx6vvt4tjmffurdw6',
         'desmosvaloper1426d5fh2jvvr8gervp523698lqsxlwuhyl704z',
         'regenvaloper1d92tfnkge6qcvt3jy42j0dx6vvt4tjmfldmhue',
         'fetchvaloper14q3mtnec6wjyhyfxcjdgqmx3kqk52gwdryt4vz',
+        'sifvaloper1yv52uehf6kjh7lul2rzus3xafdta6556j6zyd4',
       ],
       islive: true,
       validator_address: null,
