@@ -1,5 +1,5 @@
 {
-    "chain_name": "uptick-network-testnet",
+    "chain_name": "uptick",
     "api": "https://uptick-test.postcapitalist.io/",
     "sdk_version": "0.44.5",
     "coin_type": "60",
