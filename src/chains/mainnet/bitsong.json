@@ -6,7 +6,7 @@
     "coin_type": "639",
     "min_tx_fee": "3500",
     "logo": "https://dl.airtable.com/.attachments/8016b71b69fb108f0ff33eb9af1c943f/f5fe4ef4/bitsong.svg",
-    "sdk_version": "0.44.3",
+    "sdk_version": "0.44.2",
     "assets": [{
         "base": "ubtsg",
         "symbol": "BTSG",
