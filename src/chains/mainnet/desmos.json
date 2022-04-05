@@ -8,7 +8,7 @@
     "coin_type": "852",
     "min_tx_fee": "3000",
     "addr_prefix": "desmos",
-    "logo": "/logos/desmos.png",
+    "logo": "https://dl.airtable.com/.attachments/e8232a86dd06af4e0591ed300376f9b2/3aab415f/logo1.png",
     "assets": [{
         "base": "udsm",
         "symbol": "DSM",

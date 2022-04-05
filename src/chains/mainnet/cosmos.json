@@ -13,7 +13,7 @@
         "base": "uatom",
         "symbol": "ATOM",
         "exponent": "6",
-        "coingecko_id": "cosmos", 
+        "coingecko_id": "cosmos",
         "logo": "/logos/cosmos.svg"
     }]
 }

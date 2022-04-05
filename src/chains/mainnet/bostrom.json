@@ -8,12 +8,12 @@
     "coin_type": "118",
     "min_tx_fee": "5000",
     "addr_prefix": "bostrom",
-    "logo": "/logos/bostrom.png",
+    "logo": "https://ipfs.infura.io/ipfs/QmSVz41kA5aXttxT1rAXnuJecfazij3wh95X8ewd7Kdc2F",
     "assets": [{
         "base": "boot",
         "symbol": "BOOT",
         "exponent": "0",
-        "coingecko_id": "", 
-        "logo": "/logos/bostrom.png"
+        "coingecko_id": "",
+        "logo": "https://ipfs.infura.io/ipfs/QmSVz41kA5aXttxT1rAXnuJecfazij3wh95X8ewd7Kdc2F"
     }]
 }

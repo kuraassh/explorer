@@ -27,7 +27,6 @@ const router = new VueRouter({
       },
     },
     {
-<<<<<<< HEAD
       path: '/wallet/setting',
       name: 'setting',
       component: () => import('@/views/WalletSetting.vue'),
@@ -58,10 +57,6 @@ const router = new VueRouter({
     {
       path: '/donation',
       name: 'donation',
-=======
-      path: '/coffee',
-      name: 'coffee',
->>>>>>> 5f883b87324fcb11c17d7c091282e0dece20e571
       component: () => import('@core/layouts/components/Coffee.vue'),
       meta: {
         pageTitle: 'Donation',
@@ -97,6 +92,20 @@ const router = new VueRouter({
         breadcrumb: [
           {
             text: 'Import',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
+      path: '/wallet/address',
+      name: 'addresses',
+      component: () => import('@/views/WalletAddressBook.vue'),
+      meta: {
+        pageTitle: 'Address Book',
+        breadcrumb: [
+          {
+            text: 'Address Book',
             active: true,
           },
         ],
@@ -145,20 +154,6 @@ const router = new VueRouter({
         breadcrumb: [
           {
             text: 'Home',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
-      path: '/:chain/statesync',
-      name: 'statesync',
-      component: () => import('@/views/StateSync.vue'),
-      meta: {
-        pageTitle: 'State Sync',
-        breadcrumb: [
-          {
-            text: 'State Synchronization',
             active: true,
           },
         ],
@@ -378,6 +373,14 @@ const router = new VueRouter({
       },
     },
     // common modules
+    {
+      path: '/user/login',
+      name: 'login',
+      component: () => import('@/views/Login.vue'),
+      meta: {
+        layout: 'full',
+      },
+    },
     {
       path: '/error/error-404',
       name: 'error-404',

@@ -8,7 +8,7 @@
     "coin_type": "880",
     "min_tx_fee": "5000",
     "addr_prefix": "lum",
-    "logo": "/logos/lum-network.png",
+    "logo": "https://ipfs.infura.io/ipfs/QmWwKRnkHantvhoFx9serWaWKBUG6gfhSYN3SHdAv1jmKY",
     "assets": [{
         "base": "ulum",
         "symbol": "LUM",
