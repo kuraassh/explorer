@@ -6,7 +6,7 @@
         background-image: url(str-replace(str-replace($chevron-right, 'currentColor', $body-color), '#', '%23'));
         background-repeat: no-repeat;
         background-position: center;
-        color: $body-color;
+        color: $backgr;
         margin-right: $breadcrumb-item-padding;
         background-size: 14px;
       }
@@ -57,7 +57,7 @@
       background-image: url(str-replace(str-replace($chevron-right, 'currentColor', $body-color), '#', '%23'));
       background-repeat: no-repeat;
       background-position: center;
-      color: $body-color;
+      color: $backgr;
       margin-right: $breadcrumb-item-padding;
       background-size: 14px;
     }
