@@ -1,14 +1,14 @@
 // Badge
 
 .badge {
-  color: $main;
+  color: $icons;
   &[class*='badge-'] {
     [class*='icon-'] {
       line-height: 1;
     }
 
     a {
-      color: $main;
+      color: $icons;
     }
 
     // badge dropdown alignment
