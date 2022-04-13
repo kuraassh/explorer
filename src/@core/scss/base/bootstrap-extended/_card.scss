@@ -136,16 +136,16 @@
 .text-white {
   .card-img-overlay {
     .text-muted {
-      color: $white !important;
+      color: $main-text !important;
     }
   }
   code {
-    background-color: rgba($main, 1);
+    background-color: rgba($backgr, 1);
   }
   .heading-elements {
     i,
     svg {
-      color: $white;
+      color: $main-text;
     }
   }
 }
@@ -173,7 +173,7 @@
 // Congratulations Card
 .card-congratulations {
   background: linear-gradient(118deg, rgba($primary, 1), rgba($primary, 0.7));
-  color: $white;
+  color: $main-text;
 
   // image on left
   .congratulations-img-left {
