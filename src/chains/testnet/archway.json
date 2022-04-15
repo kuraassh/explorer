@@ -5,8 +5,8 @@
     "coin_type": "118",
     "min_tx_fee": "300",
     "assets": [{
-        "base": "uaugust",
-        "symbol": "august",
+        "base": "utorii",
+        "symbol": "torii",
         "exponent": "6",
         "coingecko_id": "",
         "logo": "https://pbs.twimg.com/profile_images/1448447756360630272/w5yudIw5_400x400.jpg"
