@@ -1,0 +1,17 @@
+{
+    "chain_name": "AssetMantle",
+    "coingecko": "",
+    "api": ["https://assetmantle.postcapitalist.io/"],
+    "sdk_version": "0.45.1",
+    "coin_type": "118",
+    "min_tx_fee": "5000",
+    "addr_prefix": "mantle",
+    "logo": "https://avatars.githubusercontent.com/u/97742402?s=200&v=4",
+    "assets": [{
+        "base": "umntl",
+        "symbol": "mntl",
+        "exponent": "6",
+        "coingecko_id": "",
+        "logo": "https://avatars.githubusercontent.com/u/97742402?s=200&v=4"
+    }]
+}
