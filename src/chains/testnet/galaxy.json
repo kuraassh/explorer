@@ -1,7 +1,7 @@
 {
     "chain_name": "galaxy",
     "api": "https://test-galaxy.postcapitalist.io/",
-    "sdk_version": "0.44.5",
+    "sdk_version": "0.44.0",
     "coin_type": "60",
     "min_tx_fee": "40000",
     "addr_prefix": "uglx",
@@ -11,8 +11,8 @@
         {
             "base": "glx",
             "symbol": "uglx",
-            "exponent": "18",
-            "coingecko_id": "galaxy",
+            "exponent": "6",
+            "coingecko_id": "",
             "logo": "https://raw.githubusercontent.com/galaxies-labs/galaxy-website/main/public/assets/images/logo.svg"
         }
     ]
