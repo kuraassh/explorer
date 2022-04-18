@@ -1,6 +1,6 @@
 {
     "chain_name": "Galaxy",
-    "api": ["https://test-galaxy.postcapitalist.io/"],
+    "api": ["https://test-galaxy.postcapitalist.io"],
     "sdk_version": "0.44.0",
     "coin_type": "118",
     "min_tx_fee": "300",
