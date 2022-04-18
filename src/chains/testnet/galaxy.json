@@ -1,19 +1,16 @@
 {
-    "chain_name": "galaxy",
-    "api": "https://test-galaxy.postcapitalist.io/",
+    "chain_name": "Galaxy",
+    "api": ["https://test-galaxy.postcapitalist.io/"],
     "sdk_version": "0.44.0",
-    "coin_type": "60",
-    "min_tx_fee": "40000",
-    "addr_prefix": "uglx",
-    "excludes": "mint",
-    "logo": "https://raw.githubusercontent.com/galaxies-labs/galaxy-website/main/public/assets/images/logo.svg",
-    "assets": [
-        {
-            "base": "uglx",
-            "symbol": "glx",
-            "exponent": "6",
-            "coingecko_id": "",
-            "logo": "https://raw.githubusercontent.com/galaxies-labs/galaxy-website/main/public/assets/images/logo.svg"
-        }
-    ]
+    "coin_type": "118",
+    "min_tx_fee": "300",
+    "assets": [{
+        "base": "uglx",
+        "symbol": "glx",
+        "exponent": "6",
+        "coingecko_id": "",
+        "logo": "https://raw.githubusercontent.com/galaxies-labs/galaxy-website/main/public/assets/images/logo.svg"
+    }],
+    "addr_prefix": "galaxy",
+    "logo": "https://raw.githubusercontent.com/galaxies-labs/galaxy-website/main/public/assets/images/logo.svg"
 }
