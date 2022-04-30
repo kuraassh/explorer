@@ -1,5 +1,5 @@
 {
-    "chain_name": "Galaxy",
+    "chain_name": "galaxy",
     "api": ["https://galaxy.postcapitalist.io"],
     "sdk_version": "0.44.0",
     "coin_type": "118",
