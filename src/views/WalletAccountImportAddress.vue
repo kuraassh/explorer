@@ -284,7 +284,7 @@
       </tab-content>
     </form-wizard>
 
-    <b-alert
+    <!-- <b-alert
       variant="danger"
       :show="true"
     >
@@ -294,7 +294,7 @@
       <div class="alert-body">
         <span>Ping.pub is maintained by the community, Everyone could add a chain to ping.pub. Some of those blockchains are not fully tested, Use at your own risk.</span>
       </div>
-    </b-alert>
+    </b-alert> -->
   </div>
 </template>
 
