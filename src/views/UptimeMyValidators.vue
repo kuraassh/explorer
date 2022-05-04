@@ -43,7 +43,6 @@ export default {
   components: {
     BRow,
     BCol,
-    BAlert,
     UptimeMyChainBlocks,
   },
   directives: {
