@@ -312,7 +312,7 @@ export default {
   },
   computed: {
     pingVals() {
-      return this.list.filter(x => this.keys.includes(x.operator_address))
+      return this.list.filter(x => x.description.identity === 'CBFDCD0D9180878B')
     },
     list() {
       return this.validators.map(x => {
