@@ -50,7 +50,15 @@
               {{ p.title }}
             </router-link></b-card-title>
           <b-card-body md="12">
-            <div class="gov-wrapper d-flex flex-wrap">
+            <div class="gov-wrapper flex-wrap">
+              <div class="gov">
+                <p class="card-text mb-25">
+                  Type
+                </p>
+                <h6 class="mb-0">
+                  {{ formatType(p.contents['@type']) }}
+                </h6>
+              </div>
               <div class="gov">
                 <p class="card-text mb-25">
                   Start Date
@@ -73,14 +81,6 @@
                 </p>
                 <h6 class="mb-0">
                   {{ formatToken(p.total_deposit) || '-' }}
-                </h6>
-              </div>
-              <div class="gov">
-                <p class="card-text mb-25">
-                  Turnout
-                </p>
-                <h6 class="mb-0">
-                  {{ percent(p.tally.turnout) }}%
                 </h6>
               </div>
             </div>
@@ -157,19 +157,19 @@
             </router-link>
             <b-button
               v-if="p.status===1"
-              v-b-modal.deposit-window
+              v-b-modal.operation-modal
               variant="primary"
               class="btn float-right mg-2"
-              @click="selectProposal(p.id, p.title)"
+              @click="selectProposal('GovDeposit',p.id, p.title)"
             >
               {{ $t('btn_deposit') }}
             </b-button>
             <b-button
               v-if="p.status===2"
-              v-b-modal.vote-window
+              v-b-modal.operation-modal
               variant="primary"
               class="btn float-right mg-2"
-              @click="selectProposal(p.id, p.title)"
+              @click="selectProposal('Vote',p.id, p.title)"
             >
               {{ $t('btn_vote') }}
             </b-button>
@@ -177,13 +177,22 @@
         </b-card>
       </b-col>
     </b-row>
-    <operation-vote-component
+    <b-row v-if="next">
+      <b-col>
+        <b-button
+          block
+          variant="outline-primary"
+          :disabled="loading"
+          @click="getList()"
+        >
+          Load More
+        </b-button>
+      </b-col>
+    </b-row>
+    <operation-modal
+      :type="operationModalType"
       :proposal-id="selectedProposalId"
-      :title="selectedTitle"
-    />
-    <operation-gov-deposit-component
-      :proposal-id="selectedProposalId"
-      :title="selectedTitle"
+      :proposal-title="selectedTitle"
     />
   </div>
 </template>
@@ -193,11 +202,9 @@ import {
   BCard, BCardTitle, BCardBody, BCardFooter, BButton, BProgressBar, BProgress, BBadge, BTooltip, BRow, BCol, VBModal,
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
-import { Proposal } from '@/libs/data'
 import { percent, tokenFormatter } from '@/libs/utils'
 import dayjs from 'dayjs'
-import OperationVoteComponent from './OperationVoteComponent.vue'
-import OperationGovDepositComponent from './OperationGovDepositComponent.vue'
+import OperationModal from '@/views/components/OperationModal/index.vue'
 
 export default {
   components: {
@@ -212,8 +219,7 @@ export default {
     BCardBody,
     BRow,
     BCol,
-    OperationVoteComponent,
-    OperationGovDepositComponent,
+    OperationModal,
   },
   directives: {
     'b-modal': VBModal,
@@ -223,40 +229,54 @@ export default {
     return {
       selectedProposalId: 0,
       selectedTitle: '',
-      proposals: [new Proposal()],
+      proposals: [],
       max: 1,
+      operationModalType: '',
+      next: '',
     }
   },
   mounted() {
     this.getList()
   },
   methods: {
+    formatType(v) {
+      const txt = String(v).replace('Proposal', '')
+      const index = txt.lastIndexOf('.')
+      return index > 0 ? txt.substring(index + 1) : txt
+    },
     percent: v => percent(v),
     formatDate: v => dayjs(v).format('YYYY-MM-DD'),
     formatToken: v => tokenFormatter(v, {}),
-    selectProposal(pid, title) {
+    selectProposal(modal, pid, title) {
+      this.operationModalType = modal
       this.selectedProposalId = Number(pid)
       this.selectedTitle = title
     },
     getList() {
-      this.$http.getGovernanceList().then(res => {
-        const voting = res.filter(i => i.status === 2)
-        if (voting.length > 0) {
-          let i = 0
-          Promise.all(voting.reverse().map(p => this.$http.getGovernanceTally(p.id, p.tally.total))).then(update => {
-            this.proposals.map(x => {
-              if (x.status === 2) {
-                const xh = x
-                xh.tally = update[i]
-                i += 1
-                return xh
-              }
-              return x
-            })
-          })
-        }
-        this.proposals = res.reverse()
+      this.loading = true
+      this.$http.getGovernanceList(this.next).then(res => {
+        this.proposals = this.proposals.concat(res.proposals)
+        this.updateTally(this.proposals)
+        this.next = res.pagination.next_key
+        this.loading = false
       })
+    },
+    updateTally(res) {
+      const voting = res.filter(i => i.status === 2)
+      if (voting.length > 0) {
+        let i = 0
+        Promise.all(voting.reverse().map(p => this.$http.getGovernanceTally(p.id, 0))).then(update => {
+          this.proposals.map(x => {
+            if (x.status === 2) {
+              const xh = x
+              xh.tally = update[i]
+              i += 1
+              return xh
+            }
+            return x
+          })
+        })
+      }
     },
   },
 }
@@ -265,7 +285,7 @@ export default {
 <style scoped>
 section {
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: nowrap; */
   justify-content: space-between;
 }
 .card {
@@ -274,7 +294,6 @@ section {
 .gov-wrapper {
     display: flex;
     justify-content:center;
-    align-items:flex-end;
 }
 .dark-layout .gov-wrapper .gov {
     background-color: #161d31;
