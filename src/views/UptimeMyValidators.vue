@@ -26,7 +26,7 @@
       <div class="alert-body">
         There are two ways to monitor your validators:
         <li> Pin a validator on Uptime pages.</li>
-        <li> Specify parameters like following: <pre>https://ping.pub/cosmos/uptime/my?validators={"sifchain":["FBADE9A30473BB9ED6DFA16BFB3838E028F33650"],"chain_name":["hexAddress"]}</pre></li>
+        <li> Specify parameters like following: <pre>https://explorer.postalicalist.io/cosmos/uptime/my?validators={"sifchain":["FBADE9A30473BB9ED6DFA16BFB3838E028F33650"],"chain_name":["hexAddress"]}</pre></li>
       </div>
     </b-alert> -->
   </div>
@@ -34,7 +34,7 @@
 
 <script>
 import {
-  BRow, BCol, VBTooltip, BAlert,
+  BRow, BCol, VBTooltip, //BAlert,
 } from 'bootstrap-vue'
 import { consensusPubkeyToHexAddress, getCachedValidators, getLocalChains } from '@/libs/utils'
 import UptimeMyChainBlocks from './UptimeMyChainBlocks.vue'
