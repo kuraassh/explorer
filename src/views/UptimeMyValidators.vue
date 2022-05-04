@@ -34,7 +34,7 @@
 
 <script>
 import {
-  BRow, BCol, VBTooltip, //BAlert,
+  BRow, BCol, VBTooltip,
 } from 'bootstrap-vue'
 import { consensusPubkeyToHexAddress, getCachedValidators, getLocalChains } from '@/libs/utils'
 import UptimeMyChainBlocks from './UptimeMyChainBlocks.vue'
