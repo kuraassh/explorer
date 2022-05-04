@@ -3,6 +3,7 @@
     <b-card
       v-if="pingVals && pingVals.length > 0"
       title="Let's help those in need together 🤍"
+      class="overflow-auto"
     >
       <b-table
         :items="pingVals"
@@ -78,7 +79,7 @@
         </template>
         <template #cell(operation)="data">
           <b-button
-            v-b-modal.delegate-window
+            v-b-modal.operation-modal
             :name="data.item.operator_address"
             variant="primary"
             size="sm"
@@ -91,6 +92,7 @@
     </b-card>
     <b-card
       no-body
+      class="overflow-auto"
     >
       <b-card-header class="d-flex justify-content-between">
         <b-form-group class="mb-0">
@@ -186,7 +188,7 @@
           </template>
           <template #cell(operation)="data">
             <b-button
-              v-b-modal.delegate-window
+              v-b-modal.operation-modal
               :name="data.item.operator_address"
               variant="primary"
               size="sm"
@@ -197,8 +199,8 @@
           </template>
         </b-table>
       </b-card-body>
-      <template #footer>
-        <small class="d-none d-md-block">
+      <b-card-footer class="d-none d-md-block">
+        <small>
           <b-badge variant="danger">
               &nbsp;
           </b-badge>
@@ -208,23 +210,28 @@
           </b-badge>
           Top 67% of Voting Power
         </small>
-      </template>
+      </b-card-footer>
     </b-card>
-    <operation-delegate-component :validator-address="validator_address" />
+    <operation-modal
+      type="Delegate"
+      :validator-address="validator_address"
+    />
+    <div id="txevent" />
   </div>
 </template>
 
 <script>
 import {
   BTable, BMedia, BAvatar, BBadge, BCard, BCardHeader, BCardTitle, VBTooltip, BCardBody, BButton, BFormRadioGroup, BFormGroup,
+  BCardFooter,
 } from 'bootstrap-vue'
 import {
   percent, StakingParameters, formatToken,
 } from '@/libs/utils'
 import { keybase } from '@/libs/fetch'
+import OperationModal from '@/views/components/OperationModal/index.vue'
 // import { toHex } from '@cosmjs/encoding'
 // import fetch from 'node-fetch'
-import OperationDelegateComponent from './OperationDelegateComponent.vue'
 
 export default {
   components: {
@@ -237,30 +244,16 @@ export default {
     BCardTitle,
     BCardBody,
     BButton,
-    OperationDelegateComponent,
     BFormRadioGroup,
     BFormGroup,
+    BCardFooter,
+    OperationModal,
   },
   directives: {
     'b-tooltip': VBTooltip,
   },
   data() {
     return {
-      keys: [
-        'bcnavaloper15dz9pjxqgzfz80fvkxscjksvz7u6r07x4k9esy',
-        'bitsongvaloper1slnkc2a8lhxgz5cc7lg9zlgzfedfpdve0rh2p6',
-        'certikvaloper1mrhq8lcrm96asw3jnk6sa0dm3qpwuqyt3r8uvn',
-        'gravityvaloper1wqe87574pzjdn5glrtr2h75r233tct73zgw524',
-        'injvaloper1get4y2tqyp047ftym76c4avl4remldtrrj9knt',
-        'kivaloper1tpjzxf34mm2kyt5t9w06tpe47d4d6mn7w09j2c',
-        'lumvaloper1zyl7dvudl9kvdx8qx30q37fhtauldayw5gf24r',
-        'rizonvaloper1ra2kdevuaf9drwkh0a62hat0nmsclylcp5c34j',
-        'ixovaloper1d92tfnkge6qcvt3jy42j0dx6vvt4tjmffurdw6',
-        'desmosvaloper1426d5fh2jvvr8gervp523698lqsxlwuhyl704z',
-        'regenvaloper1d92tfnkge6qcvt3jy42j0dx6vvt4tjmfldmhue',
-        'fetchvaloper14q3mtnec6wjyhyfxcjdgqmx3kqk52gwdryt4vz',
-        'sifvaloper1yv52uehf6kjh7lul2rzus3xafdta6556j6zyd4',
-      ],
       islive: true,
       validator_address: null,
       mintInflation: 0,
@@ -269,6 +262,8 @@ export default {
       validators: [],
       delegations: [],
       changes: {},
+      latestPower: {},
+      previousPower: {},
       validator_fields: [
         {
           key: 'index',
@@ -303,23 +298,26 @@ export default {
         },
       ],
       statusOptions: [
-        { text: 'Active', value: ['BOND_STATUS_BONDED'] },
-        { text: 'Inactive', value: ['BOND_STATUS_UNBONDED', 'BOND_STATUS_UNBONDING'] },
+        { text: 'Active', value: 'active' },
+        { text: 'Inactive', value: 'inactive' },
       ],
-      selectedStatus: ['BOND_STATUS_BONDED'],
-      isChangesLoaded: false,
+      selectedStatus: 'active',
+      isInactiveLoaded: false,
+      inactiveValidators: [],
     }
   },
   computed: {
     pingVals() {
-      return this.list.filter(x => this.keys.includes(x.operator_address))
+      return this.list.filter(x => x.description.identity === 'CBFDCD0D9180878B')
     },
     list() {
-      return this.validators.map(x => {
+      const tab = this.selectedStatus === 'active' ? this.validators : this.inactiveValidators
+      return tab.map(x => {
         const xh = x
-        const change = this.changes[x.consensus_pubkey.key]
-        if (change) {
-          xh.changes = this.isChangesLoaded ? change.latest - change.previous : 0
+        if (Object.keys(this.latestPower).length > 0 && Object.keys(this.previousPower).length > 0) {
+          const latest = this.latestPower[x.consensus_pubkey.value] || 0
+          const previous = this.previousPower[x.consensus_pubkey.value] || 0
+          xh.changes = latest - previous
         }
         return xh
       })
@@ -330,50 +328,81 @@ export default {
       this.stakingPool = pool.bondedToken
     })
     // set
-    this.getValidatorListByHeight()
     this.$http.getStakingParameters().then(res => {
       this.stakingParameters = res
     })
-    this.getValidatorListByStatus(this.selectedStatus)
+    this.initial()
   },
   beforeDestroy() {
     this.islive = false
   },
+  mounted() {
+    const elem = document.getElementById('txevent')
+    elem.addEventListener('txcompleted', () => {
+      this.initial()
+    })
+  },
   methods: {
-    getValidatorListByHeight(offset = 0) {
-      this.$http.getValidatorListByHeight('latest', offset).then(data => {
+    initial() {
+      this.$http.getValidatorList().then(res => {
+        const identities = []
+        const temp = res
+        for (let i = 0; i < temp.length; i += 1) {
+          const { identity } = temp[i].description
+          const url = this.$store.getters['chains/getAvatarById'](identity)
+          if (url) {
+            temp[i].avatar = url
+          } else if (identity && identity !== '') {
+            identities.push(identity)
+          }
+        }
+
+        // fetch avatar from keybase
+        let promise = Promise.resolve()
+        identities.forEach(item => {
+          promise = promise.then(() => new Promise(resolve => {
+            this.avatar(item, resolve)
+          }))
+        })
+        this.validators = temp
+        this.getPreviousPower(this.validators.length)
+      })
+    },
+    getPreviousPower(length) {
+      this.$http.getValidatorListByHeight('latest', 0).then(data => {
         let height = Number(data.block_height)
         if (height > 14400) {
           height -= 14400
         } else {
           height = 1
         }
-        const { changes } = this
         data.validators.forEach(x => {
-          changes[x.pub_key.key] = { latest: Number(x.voting_power), previous: 0 }
+          this.$set(this.latestPower, x.pub_key.key, Number(x.voting_power))
         })
-        this.$http.getValidatorListByHeight(height, offset).then(previous => {
-          previous.validators.forEach(x => {
-            if (changes[x.pub_key.key]) {
-              changes[x.pub_key.key].previous = Number(x.voting_power)
-            } else {
-              changes[x.pub_key.key] = { latest: 0, previous: Number(x.voting_power) }
-            }
+        for (let offset = 100; offset < length; offset += 100) {
+          this.$http.getValidatorListByHeight('latest', offset).then(latest => {
+            latest.validators.forEach(x => {
+              this.$set(this.latestPower, x.pub_key.key, Number(x.voting_power))
+            })
           })
-          this.isChangesLoaded = true
-          this.$set(this, 'changes', changes)
-        })
+        }
+        for (let offset = 0; offset < length; offset += 100) {
+          this.$http.getValidatorListByHeight(height, offset).then(previous => {
+            previous.validators.forEach(x => {
+              this.$set(this.previousPower, x.pub_key.key, Number(x.voting_power))
+            })
+          })
+        }
       })
     },
-    getValidatorListByStatus(statusList) {
-      this.validators = []
+    getValidatorListByStatus() {
+      if (this.isInactiveLoaded) return
+      const statusList = ['BOND_STATUS_UNBONDED', 'BOND_STATUS_UNBONDING']
       statusList.forEach(status => {
         this.$http.getValidatorListByStatus(status).then(res => {
           const identities = []
           const temp = res
-          let total = 0
           for (let i = 0; i < temp.length; i += 1) {
-            total += temp[i].tokens
             const { identity } = temp[i].description
             const url = this.$store.getters['chains/getAvatarById'](identity)
             if (url) {
@@ -382,10 +411,6 @@ export default {
               identities.push(identity)
             }
           }
-          if (total > 100) {
-            this.getValidatorListByHeight(100)
-          }
-          this.validators.push(...temp)
 
           // fetch avatar from keybase
           let promise = Promise.resolve()
@@ -394,8 +419,10 @@ export default {
               this.avatar(item, resolve)
             }))
           })
+          this.inactiveValidators = this.inactiveValidators.concat(res)
         })
       })
+      this.isInactiveLoaded = true
     },
     selectValidator(da) {
       this.validator_address = da
@@ -405,6 +432,7 @@ export default {
       return formatToken({ amount, denom }, {}, 0)
     },
     rankBadge(data) {
+      if (this.selectedStatus === 'inactive') return 'primary'
       const { index, item } = data
       if (index === 0) {
         window.sum = item.tokens
@@ -427,7 +455,8 @@ export default {
           if (Array.isArray(d.them) && d.them.length > 0) {
             const pic = d.them[0].pictures
             if (pic) {
-              const validator = this.validators.find(u => u.description.identity === identity)
+              const list = this.selectedStatus === 'active' ? this.validators : this.inactiveValidators
+              const validator = list.find(u => u.description.identity === identity)
               this.$set(validator, 'avatar', pic.primary.url)
               this.$store.commit('cacheAvatar', { identity, url: pic.primary.url })
             }
