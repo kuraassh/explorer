@@ -1,7 +1,7 @@
 {
     "chain_name": "chronic-token",
-    "api": ["https://api-chronic.zenchainlabs.io/"],
-    "rpc": ["https://rpc-chronic.zenchainlabs.io/"],
+    "api": ["https://cht.postcapitalist.io"],
+    "rpc": ["https://rpc-chronic.zenchainlabs.io"],
     "snapshot_provider": "",
     "sdk_version": "0.41.3",
     "coin_type": "118",
@@ -10,13 +10,13 @@
         "base": "ucht",
         "symbol": "CHT",
         "exponent": "6",
-        "coingecko_id": "", 
+        "coingecko_id": "",
         "logo": "/logos/chronic-token.jpg"
     },{
         "base": "ucgas",
         "symbol": "CGAS",
         "exponent": "6",
-        "coingecko_id": "", 
+        "coingecko_id": "",
         "logo": "/logos/chronic-token.jpg"
     }],
     "addr_prefix": "chronic",
