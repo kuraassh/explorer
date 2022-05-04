@@ -11,94 +11,113 @@
     </router-link>
     <b-card
       v-for="(items,k) in groupedDelegations"
-      :key="`row-${k}`"
+      :key="k"
       :title="k"
     >
-      <b-row class="bg-light-secondary text-white">
-        <b-col
-          md="4"
-          sm="12"
-          class="p-1 font-weight-bold"
-        >
-          VALIDATOR
-        </b-col>
-        <b-col
-          md="3"
-          sm="12"
-          class="p-1 font-weight-bold"
-        >
-          DELEGATION
-        </b-col>
-        <b-col
-          md="5"
-          sm="12"
-          class="p-1 font-weight-bold"
-        >
-          REWARD
-        </b-col>
-      </b-row>
-      <b-row
-        v-for="(row,j) in items"
-        :key="`${row.validator.validator}-${j}`"
-        class="border-bottom"
+      <b-table
+        :items="items"
+        stacked="sm"
+        :fields="fields"
       >
-        <b-col
-          md="4"
-          sm="12"
-          class="d-flex align-items-center"
-        >
-          <router-link :to="`/${row.validator.chain}/staking/${row.validator.validator}`">
-            <div cols="6">
-              <b-avatar
-                :src="row.validator.logo"
-                size="18"
-                variant="light-primary"
-                rounded=""
-              />
-              {{ row.validator.moniker }}
-            </div>
+
+        <template #cell(validator)="data">
+          <router-link :to="`/${data.item.validator.chain}/staking/${data.item.validator.validator}`">
+            <b-avatar
+              :src="data.item.validator.logo"
+              size="18"
+              variant="light-primary"
+              rounded=""
+            />
+            {{ data.item.validator.moniker }}
           </router-link>
-        </b-col>
-        <b-col
-          md="3"
-          sm="12"
-          class="d-flex align-items-center"
-        >
-          {{ row.delegation }}
-        </b-col>
-        <b-col
-          md="5"
-          sm="12"
-        >
-          <router-link :to="`/${row.validator.chain}/account/${row.delegator_address}`">
-            <div>{{ row.reward }}</div>
-            <div class="text-success">
-              {{ currency }}{{ toCurrency(row.reward) }}
-            </div>
+        </template>
+        <template #cell(delegator)="data">
+          <router-link :to="`/${data.item.validator.chain}/account/${data.item.delegator_address}`">
+            Withdraw
           </router-link>
-        </b-col>
-      </b-row>
+        </template>
+        <template #cell(action)="data">
+          <!-- size -->
+          <b-button-group
+            size="sm"
+          >
+            <b-button
+              v-b-modal.delegate-window
+              v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+              v-b-tooltip.hover.top="'Delegate'"
+              variant="outline-primary"
+              @click="selectValue(data.item)"
+            >
+              <feather-icon icon="LogInIcon" />
+            </b-button>
+            <b-button
+              v-b-modal.redelegate-window
+              v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+              v-b-tooltip.hover.top="'Redelegate'"
+              variant="outline-primary"
+              @click="selectValue(data.item)"
+            >
+              <feather-icon icon="ShuffleIcon" />
+            </b-button>
+            <b-button
+              v-b-modal.unbond-window
+              v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+              v-b-tooltip.hover.top="'Unbond'"
+              variant="outline-primary"
+              @click="selectValue(data.item)"
+            >
+              <feather-icon icon="LogOutIcon" />
+            </b-button>
+          </b-button-group>
+        </template>
+      </b-table>
     </b-card>
+
+    <!--- not completed--->
+    <operation-withdraw-component :address="address" />
+    <operation-unbond-component
+      :address="address"
+      :validator-address.sync="selectedValidator"
+    />
+    <operation-delegate-component
+      :address="address"
+      :validator-address.sync="selectedValidator"
+    />
+    <operation-redelegate-component
+      :address="address"
+      :validator-address.sync="selectedValidator"
+    />
   </div>
 </template>
 
 <script>
 import {
-  VBTooltip, BCard, BAvatar, BRow, BCol,
+  BButton, VBTooltip, BTable, BCard, BButtonGroup, BAvatar,
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import {
-  formatToken, getCachedValidators, getLocalAccounts, getLocalChains, getUserCurrency, getUserCurrencySign, numberWithCommas, tokenFormatter,
+  formatToken, getCachedValidators, getLocalAccounts, getLocalChains, tokenFormatter,
 } from '@/libs/utils'
 import FeatherIcon from '@/@core/components/feather-icon/FeatherIcon.vue'
+
+import OperationWithdrawComponent from './OperationWithdrawComponent.vue'
+import OperationUnbondComponent from './OperationUnbondComponent.vue'
+import OperationDelegateComponent from './OperationDelegateComponent.vue'
+import OperationRedelegateComponent from './OperationRedelegateComponent.vue'
 
 export default {
   components: {
     BAvatar,
+    BButton,
+    BButtonGroup,
+    BTable,
     BCard,
-    BRow,
-    BCol,
     FeatherIcon,
+
+    OperationWithdrawComponent,
+    OperationDelegateComponent,
+    OperationRedelegateComponent,
+    OperationUnbondComponent,
   },
   directives: {
     'b-tooltip': VBTooltip,
@@ -106,15 +125,34 @@ export default {
   },
   data() {
     return {
+      fields: [
+        {
+          key: 'validator',
+          sortable: true,
+          // sortByFormatted: true,
+        },
+        {
+          key: 'delegation',
+          sortable: true,
+          // sortByFormatted: true,
+        },
+        {
+          key: 'reward',
+          sortable: true,
+          // sortByFormatted: true,
+        },
+        {
+          key: 'delegator',
+          label: '',
+          sortable: true,
+          // sortByFormatted: true,
+        },
+      ],
       address: '',
       selectedValidator: '',
       accounts: [],
       delegations: [],
       rewards: {},
-      operationModalType: '',
-      ibcDenoms: {},
-      currency: getUserCurrencySign(),
-      currency2: getUserCurrency(),
     }
   },
   computed: {
@@ -162,40 +200,25 @@ export default {
     this.init()
   },
   methods: {
-    selectValue(type, v) {
-      this.operationModalType = type
+    selectValue(v) {
       this.address = v.delegator_address
       this.selectedValidator = v.validator.validator
       return v
     },
     findMoniker(chain, addr) {
       const vals = JSON.parse(getCachedValidators(chain))
-      if (vals) {
-        const val = vals.find(x => x.operator_address === addr)
-        if (val) {
-          return val.description.moniker
-        }
+      const val = vals.find(x => x.operator_address === addr)
+      if (val) {
+        return val.description.moniker
       }
       return addr
     },
     findReward(delegator, validator) {
       const reward = this.rewards[delegator]?.rewards.find(x => x.validator_address === validator) || null
       if (reward) {
-        return tokenFormatter(reward.reward, this.ibcDenoms)
+        return tokenFormatter(reward.reward)
       }
       return '-'
-    },
-    getPrice(denom) {
-      const quote = this.$store.state.chains.quotes[denom]
-      return quote ? quote[this.currency2] : 0
-    },
-    toCurrency(token) {
-      let profit = 0
-      token.split(', ').forEach(r => {
-        const t = r.trim().replace(/,/, '').split(' ')
-        profit += Number(t[0]) * this.getPrice(t[1])
-      })
-      return numberWithCommas(profit.toFixed(2))
     },
     init() {
       this.accounts = getLocalAccounts()
@@ -206,13 +229,6 @@ export default {
             const chain = chains[add.chain]
             this.$http.getStakingReward(add.addr, chain).then(res => {
               this.rewards[add.addr] = res
-              res.total.forEach(t => {
-                if (t.denom.startsWith('ibc')) {
-                  this.$http.getIBCDenomTrace(t.denom, chain).then(denom => {
-                    this.$set(this.ibcDenoms, t.denom, denom)
-                  })
-                }
-              })
             })
             this.$http.getStakingDelegations(add.addr, chain).then(res => {
               if (res.delegation_responses && res.delegation_responses.length > 0) {
