@@ -28,4 +28,4 @@ yarn-error.log*
 # Docs
 /docs/.temp
 
-src/chains/*
+/src/chains/*
