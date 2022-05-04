@@ -4,8 +4,8 @@
     "api": ["https://lcd.explorebitsong.com", "https://bitsong.postcapitalist.io"],
     "addr_prefix": "bitsong",
     "coin_type": "639",
-    "min_tx_fee": "5000",
-    "logo": "/logos/bitsong.svg",
+    "min_tx_fee": "3500",
+    "logo": "https://dl.airtable.com/.attachments/8016b71b69fb108f0ff33eb9af1c943f/f5fe4ef4/bitsong.svg",
     "sdk_version": "0.42.0",
     "assets": [{
         "base": "ubtsg",

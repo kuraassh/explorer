@@ -27,7 +27,7 @@ module.exports = {
     },
     plugins: [
       new BundleAnalyzerPlugin({
-        analyzerMode: 'disabled',
+        analyzerMode: 'static',
         openAnalyzer: false,
       }),
       new CompressionWebpackPlugin({

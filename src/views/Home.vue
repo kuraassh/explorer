@@ -40,11 +40,8 @@
         <b-col
           v-for="(data,index) in chains"
           :key="index"
-          v-observe-visibility="(visible) => visibilityChanged(visible, data)"
+          md="3"
           sm="6"
-          md="4"
-          lg="4"
-          xl="3"
         >
           <router-link :to="data.chain_name">
             <b-card
@@ -52,38 +49,8 @@
               class="earnings-card text-left"
             >
               <div>
-                <b-card-title class="mb-1 d-flex justify-content-between">
-                  <span class="text-uppercase">{{ data.chain_name }} <small class="font-small-2">{{ data.sdk_version }}</small></span>
-                  <b-dropdown
-                    class="ml-1"
-                    variant="link"
-                    no-caret
-                    toggle-class="p-0"
-                    right
-                  >
-                    <template #button-content>
-                      <feather-icon
-                        icon="MoreVerticalIcon"
-                        size="18"
-                        class="cursor-pointer"
-                      />
-                    </template>
-                    <b-dropdown-item :to="`/${data.chain_name}/`">
-                      Summary
-                    </b-dropdown-item>
-                    <b-dropdown-item :to="`/${data.chain_name}/staking`">
-                      Staking
-                    </b-dropdown-item>
-                    <b-dropdown-item :to="`/${data.chain_name}/gov`">
-                      Governance
-                    </b-dropdown-item>
-                    <b-dropdown-item :to="`/${data.chain_name}/uptime`">
-                      Uptime
-                    </b-dropdown-item>
-                    <b-dropdown-item :to="`/${data.chain_name}/statesync`">
-                      State Sync
-                    </b-dropdown-item>
-                  </b-dropdown>
+                <b-card-title class="mb-1 text-uppercase">
+                  {{ data.chain_name }} <small class="font-small-2">{{ data.sdk_version }}</small>
                 </b-card-title>
 
                 <div class="d-flex justify-content-between">
@@ -136,7 +103,6 @@
 /* eslint-disable global-require */
 import {
   BLink, BAvatar, BRow, BCol, BCard, BCardText, BCardTitle, BNav, BNavItem, BButton,
-  BDropdown, BDropdownItem,
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
@@ -155,8 +121,6 @@ export default {
     BCard,
     BCardText,
     BCardTitle,
-    BDropdown,
-    BDropdownItem,
     BNav,
     BNavItem,
     BButton,
@@ -186,27 +150,29 @@ export default {
       return this.downImg
     },
   },
+  created() {
+    this.fetch()
+    this.timer = setInterval(this.fetch, 120000)
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
+  },
   methods: {
-    fetch(k) {
-      const chain = this.chains[k]
-      if (chain.api) {
+    fetch() {
+      Object.keys(this.chains).forEach(k => {
+        const chain = this.chains[k]
         const index = localStorage.getItem(`${chain.chain_name}-api-index`) || 0
-        const host = Array.isArray(chain.api) ? chain.api[index] : chain.api
-        fetch(`${host}/blocks/latest`).then(res => res.json()).then(b => {
-          const { header } = b.block
-          this.$set(chain, 'height', header.height)
-          this.$set(chain, 'time', toDay(header.time))
-          this.$set(chain, 'variant', timeIn(header.time, 3, 'm') ? 'danger' : 'success')
-        })
-      }
-    },
-    visibilityChanged(isVisible, chain) {
-      this.isVisible = isVisible
-      const idle = this.chains[chain.chain_name]
-      if (isVisible && !idle.loaded) {
-        this.$set(idle, 'loaded', true)
-        this.fetch(chain.chain_name)
-      }
+        if (chain.api) {
+          const host = Array.isArray(chain.api) ? chain.api[index] : chain.api
+          fetch(`${host}/blocks/latest`).then(res => res.json()).then(b => {
+          // console.log(b.block.header)
+            const { header } = b.block
+            this.$set(chain, 'height', header.height)
+            this.$set(chain, 'time', toDay(header.time))
+            this.$set(chain, 'variant', timeIn(header.time, 3, 'm') ? 'danger' : 'success')
+          })
+        }
+      })
     },
   },
 }

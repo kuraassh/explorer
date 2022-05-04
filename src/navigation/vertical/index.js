@@ -41,7 +41,11 @@ const modules = [
 ]
 
 function processMenu() {
-  const chainMenus = []
+  const chainMenus = [
+    {
+      header: 'blockchains',
+    },
+  ]
   Object.keys(store.state.chains.config).forEach(chain => {
     const menu = {
       title: chain,

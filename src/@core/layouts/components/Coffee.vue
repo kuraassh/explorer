@@ -21,6 +21,9 @@
         </b-input-group>
       </b-col>
     </b-row>
+    <operation-transfer-component
+      :recipient-address.sync="selectedAddress"
+    />
   </div>
 </template>
 
@@ -33,6 +36,7 @@ import Ripple from 'vue-ripple-directive'
 import {
   addressEnCode, addressDecode,
 } from '@/libs/utils'
+import OperationTransferComponent from '@/views/OperationTransferComponent.vue'
 
 export default {
   name: 'AppFooter',
@@ -43,6 +47,7 @@ export default {
     BFormInput,
     BInputGroupPrepend,
     BInputGroup,
+    OperationTransferComponent,
   },
   directives: {
     Ripple,
