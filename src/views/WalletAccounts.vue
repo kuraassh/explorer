@@ -92,18 +92,22 @@
             />
             <span class="align-middle">{{ item.name }}</span>
           </b-button>
-          <div class="mr-50">
-            <router-link
-              :to="`/wallet/import?name=${item.name}`"
-              class="mr-50"
+          <b-form-checkbox
+            v-model="defaultWallet"
+            v-b-tooltip.hover.v-primary
+            :value="item.name"
+            title="Set as default wallet"
+            variant="outline-warning"
+            :readonly="item.name===defaultWallet"
+          >
+            <span
+              :class="item.name===defaultWallet ? 'text-primary' : ''"
+              class="font-weight-bolder pb-0"
+              style="font-size:16px"
             >
-              <feather-icon
-                icon="EditIcon"
-                class="mr-10"
-              />
-              <span class="align-middle">Edit</span>
-            </router-link>
-          </div>
+              Set as default
+            </span>
+          </b-form-checkbox>
         </div>
 
         <b-row>
@@ -113,6 +117,7 @@
             sm="12"
             md="6"
             xl="4"
+            :class="(balances[acc.addr])? 'order-1' : 'order-9' "
           >
 
             <b-card
@@ -123,14 +128,48 @@
                 <div>
                   <b-card-title> <span class="text-uppercase">{{ acc.chain }}</span></b-card-title>
                 </div>
-                <feather-icon
-                  v-b-tooltip.hover.v-danger
-                  :title="`Remove ${acc.chain.toUpperCase()}`"
-                  icon="XSquareIcon"
-                  size="18"
-                  class="cursor-pointer text-danger"
-                  @click="removeAddress(acc.addr)"
-                />
+                <b-dropdown
+                  class="ml-1"
+                  variant="link"
+                  no-caret
+                  toggle-class="p-0"
+                  right
+                >
+                  <template #button-content>
+                    <feather-icon
+                      icon="AlignJustifyIcon"
+                      size="18"
+                      class="cursor-pointer"
+                    />
+                  </template>
+                  <b-dropdown-item
+                    v-if="balances[acc.addr]"
+                    :to="`/${acc.chain}/account/${acc.addr}`"
+                  >
+                    <feather-icon icon="TrelloIcon" /> Detail
+                  </b-dropdown-item>
+                  <b-dropdown-divider
+                    v-if="balances[acc.addr]"
+                  />
+                  <b-dropdown-item
+                    v-if="balances[acc.addr]"
+                    v-b-modal.transfer-window
+                    @click="transfer(acc.addr)"
+                  >
+                    <feather-icon icon="SendIcon" /> Transfer
+                  </b-dropdown-item>
+                  <b-dropdown-item
+                    v-if="balances[acc.addr]"
+                    v-b-modal.ibc-transfer-window
+                    @click="transfer(acc.addr)"
+                  >
+                    <feather-icon icon="SendIcon" /> IBC Transfer
+                  </b-dropdown-item>
+                  <b-dropdown-item @click="removeAddress(acc.addr)">
+                    <feather-icon icon="Trash2Icon" /> Remove
+                  </b-dropdown-item>
+                </b-dropdown>
+
               </b-card-header>
               <b-card-body class="text-truncate">
                 <b-row>
@@ -206,7 +245,6 @@
                           variant="outline-primary"
                           :to="`/${acc.chain}/account/${acc.addr}`"
                           class="mt-1 mb-0"
-                          @click="updateDefaultWallet(item.name)"
                         >
                           <feather-icon icon="TrelloIcon" /> Detail
                         </b-button>
@@ -227,18 +265,17 @@
         Connect Wallet
       </b-card>
     </router-link>
-    <operation-modal
-      :type="operationModalType"
-      :address="selectedAddress"
-      :selected-chain-name="selectedChainName"
+    <operation-transfer-component
+      :address.sync="selectedAddress"
     />
+    <operation-transfer-2-component :address="selectedAddress" />
   </div>
 </template>
 
 <script>
 import {
   BCard, BCardHeader, BCardTitle, BCardBody, VBModal, BRow, BCol, BAvatar, BButton,
-  BDropdown, BDropdownItem, VBTooltip,
+  BDropdown, BDropdownItem, BDropdownDivider, BFormCheckbox, VBTooltip,
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import FeatherIcon from '@/@core/components/feather-icon/FeatherIcon.vue'
@@ -250,7 +287,8 @@ import {
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue'
-import OperationModal from '@/views/components/OperationModal/index.vue'
+import OperationTransferComponent from './OperationTransferComponent.vue'
+import OperationTransfer2Component from './OperationTransfer2Component.vue'
 import ChartComponentDoughnut from './ChartComponentDoughnut.vue'
 import EchartScatter from './components/charts/EchartScatter.vue'
 
@@ -266,16 +304,19 @@ export default {
     BCardTitle,
     BDropdown,
     BDropdownItem,
+    BDropdownDivider,
+    BFormCheckbox,
     // eslint-disable-next-line vue/no-unused-components
     VBTooltip,
     FeatherIcon,
+    OperationTransferComponent,
     // eslint-disable-next-line vue/no-unused-components
     ToastificationContent,
+    OperationTransfer2Component,
     ChartComponentDoughnut,
     AppCollapse,
     AppCollapseItem,
     EchartScatter,
-    OperationModal,
   },
   directives: {
     'b-tooltip': VBTooltip,
@@ -294,8 +335,6 @@ export default {
       delegations: {},
       ibcDenom: {},
       quotes: {},
-      operationModalType: '',
-      selectedChainName: '',
       options: {
         maintainAspectRatio: false,
         legend: {
@@ -346,6 +385,14 @@ export default {
     }
   },
   computed: {
+    defaultWallet: {
+      get() {
+        return this.$store.state.chains.defaultWallet
+      },
+      set(value) {
+        this.$store.commit('setDefaultWallet', value)
+      },
+    },
     calculateTotal() {
       let total = 0
       if (this.calculateByDenom.value) {
@@ -486,10 +533,8 @@ export default {
       this.currency2 = c
       this.currency = getUserCurrencySign()
     },
-    transfer(type, addr, chain) {
-      this.operationModalType = type
+    transfer(addr) {
       this.selectedAddress = addr
-      this.selectedChainName = chain
     },
     completeAdd() {
       this.init()
@@ -597,9 +642,6 @@ export default {
         }
       })
       localStorage.setItem('accounts', JSON.stringify(this.accounts))
-    },
-    updateDefaultWallet(v) {
-      this.$store.commit('setDefaultWallet', v)
     },
     copy(v) {
       this.$copyText(v).then(() => {

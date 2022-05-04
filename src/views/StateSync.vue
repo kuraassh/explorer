@@ -2,25 +2,15 @@
   <div class="container-md">
     <b-card>
       <b-card-title>
-        What's State Sync?
-      </b-card-title>
-      The Tendermint Core 0.34 release includes support for state sync, which allows a new node to join a network by fetching a snapshot of the application state at a recent height instead of fetching and replaying all historical blocks. This can reduce the time needed to sync with the network from days to minutes.
-      Click <a href="https://blog.cosmos.network/cosmos-sdk-state-sync-guide-99e4cf43be2f">here</a> for more infomation.
-    </b-card>
-    <b-card>
-      <b-card-title>
-        Starting New Node From State Sync
-        <b-badge
-          v-if="snapshot_provider?false:true"
-          variant="danger"
-        >
+        Starting New Node From State Sync <b-badge variant="danger">
           WIP
         </b-badge>
       </b-card-title>
-      <b class="mt-1">1. Install Binary ({{ version }})</b><br>
-      We need to install the binary first and make sure that the version is the one currently in use on mainnet.
+      <b class="mt-1">1. What's State Sync? </b><br>
+      The Tendermint Core 0.34 release includes support for state sync, which allows a new node to join a network by fetching a snapshot of the application state at a recent height instead of fetching and replaying all historical blocks. This can reduce the time needed to sync with the network from days to minutes.
+      Click <a href="https://blog.cosmos.network/cosmos-sdk-state-sync-guide-99e4cf43be2f">here</a> for more infomation.
       <br><br>
-      <b class="mt-1">2. Enable State Sync</b><br>
+      <b class="mt-1">2. How to use it? </b><br>
       We can configure Tendermint to use state sync in <code>$DAEMON_HOME/config/config.toml</code>, then start daemon.
       <ul class="mt-1">
         <li
@@ -40,6 +30,17 @@
         rows="7"
         class="my-1"
         @change="check()"
+      />
+      <b class="mt-1">3. (Optional) Adding Snapshot Providers </b><br>
+      To reduce the time of snapshot discovering, we can add providers into persistent_peers in <code>$DAEMON_HOME/config/config.toml</code>.
+      <b-form-textarea
+        id="provider"
+        v-model="providers"
+        readonly
+        :state="snapshot_provider?true:false"
+        placeholder="Loading..."
+        rows="3"
+        class="mt-1"
       />
     </b-card>
 
@@ -84,7 +85,6 @@ export default {
       ? `# Comma separated list of nodes to keep persistent connections to \npersistent_peers = "${peers}" `
       : 'OMG！ There is NO available providers, but you can try it.'
     return {
-      version: '',
       snapshot_provider,
       servers,
       providers,
@@ -102,12 +102,33 @@ snapshot-interval = 1000
 snapshot-keep-recent = 2`,
     }
   },
+  //   computed: {
+  //     state: {
+  //       get() {
+  //         let servers = ''
+  //         const { rpc } = this.$store.state.chains.selected
+  //         if (rpc && Array.isArray(rpc)) {
+  //           servers = rpc.join(',')
+  //         }
+  //         return `[statesync]
+  // enable = true
+  // rpc_servers = "${servers}"
+  // trust_height = ${this.height}
+  // trust_hash = "${this.hash}"
+  // trust_period = "168h"  # 2/3 of unbonding time`
+  //       },
+  //       set(text) {
+  //         console.log(text)
+  //         // this.state = text
+  //       },
+  //     },
+  //   },
   created() {
     const interval = 1000
     this.$http.getLatestBlock().then(l => {
       const { height } = l.block.header
-      if (height > interval * 3) {
-        this.$http.getBlockByHeight(Math.trunc((height - 3 * interval) / interval) * interval).then(x => {
+      if (height > interval) {
+        this.$http.getBlockByHeight(Math.trunc(height / interval) * interval).then(x => {
           this.hash = x.block_id.hash
           this.height = x.block.header.height
           this.state = `[statesync]
@@ -119,9 +140,6 @@ trust_period = "168h"  # 2/3 of unbonding time`
           this.check()
         })
       }
-      this.$http.getNodeInfo().then(res => {
-        this.version = res.application_version.version
-      })
     })
   },
   methods: {

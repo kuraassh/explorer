@@ -143,22 +143,6 @@ const router = new VueRouter({
         ],
       },
     },
-    {
-      path: '/wallet/votes',
-      name: 'myVotes',
-      component: () => import('@/views/WalletVotes.vue'),
-      meta: {
-        pageTitle: 'My Votes',
-        breadcrumb: [
-          {
-            text: 'Wallet',
-          },
-          {
-            text: 'My Votes',
-          },
-        ],
-      },
-    },
     // chain modules
     {
       path: '/:chain/',
@@ -426,10 +410,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   const c = to.params.chain
-  if (c) {
-    store.commit('select', { chain_name: c })
-    // store.dispatch('chains/getAllIBCDenoms', Vue.prototype)
-  }
+  if (c) store.commit('select', { chain_name: c })
 
   const config = JSON.parse(localStorage.getItem('chains'))
   // const has = Object.keys(config).findIndex(i => i === c)
