@@ -27,8 +27,21 @@
               size="18"
               @click="copy()"
             />
-          </h3>
-          {{ address }}
+          </b-avatar>
+          <div class="ml-2">
+            <h3
+              style="color: #fff"
+              class="mb-0"
+            >
+              Address: <feather-icon
+                icon="CopyIcon"
+                size="18"
+                @click="copy()"
+              />
+            </h3>
+            {{ address }}
+            <span v-if="isEthAddr"> - {{ ethaddress() }}</span>
+          </div>
         </div>
       </div>
     </b-card>
@@ -406,7 +419,7 @@ import VueQr from 'vue-qr'
 import chainAPI from '@/libs/fetch'
 import {
   formatToken, formatTokenAmount, formatTokenDenom, getStakingValidatorOperator, percent, tokenFormatter, toDay,
-  toDuration, abbrMessage, abbrAddress, getUserCurrency, getUserCurrencySign, numberWithCommas,
+  toDuration, abbrMessage, abbrAddress, getUserCurrency, getUserCurrencySign, numberWithCommas, toETHAddress,
 } from '@/libs/utils'
 import { sha256 } from '@cosmjs/crypto'
 import { toHex } from '@cosmjs/encoding'
@@ -615,6 +628,12 @@ export default {
       }
       return table
     },
+    denoms() {
+      return this.$store.state.chains.denoms
+    },
+    isEthAddr() {
+      return JSON.stringify(this.account).indexOf('PubKeyEthSecp256k1') > 0
+    },
   },
   created() {
     this.$http.getAllIBCDenoms().then(x => {
@@ -708,6 +727,9 @@ export default {
           },
         })
       })
+    },
+    ethaddress() {
+      return toETHAddress(this.address)
     },
   },
 }
