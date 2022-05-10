@@ -284,9 +284,9 @@
       </tab-content>
     </form-wizard>
 
-    <!-- <b-alert
-      variant="danger"
-      :show="true"
+    <b-alert
+      variant="secondary"
+      :show="!accounts"
     >
       <h4 class="alert-heading">
         DISCLAIMER:
@@ -366,6 +366,13 @@ export default {
   computed: {
     chains() {
       const config = JSON.parse(localStorage.getItem('chains'))
+
+      Object.values(config).forEach(x => {
+        if (x.coin_type === '60' && x.chain_name !== 'gravity-bridge') {
+          this.exludes.push(x.chain_name)
+        }
+      })
+
       this.exludes.forEach(x => {
         delete config[x]
       })
