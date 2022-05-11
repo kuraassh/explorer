@@ -1,6 +1,6 @@
 {
     "chain_name": "injective",
-    "api": ["https://lcd.injective.network","https://injective.postcapitalist.io"],
+    "api": ["https://injective.postcapitalist.io","https://lcd.injective.network"],
     "rpc": ["https://injective-rpc.api.chainlayer.network:443", "https://injective-rpc.api.chainlayer.network:443"],
     "sdk_version": "v0.44.5",
     "coin_type": "60",
