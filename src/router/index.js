@@ -27,34 +27,6 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/wallet/setting',
-      name: 'setting',
-      component: () => import('@/views/WalletSetting.vue'),
-      meta: {
-        pageTitle: 'Setting',
-        breadcrumb: [
-          {
-            text: 'Setting',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
-      path: '/wallet/portfolio',
-      name: 'portfolio',
-      component: () => import('@/views/WalletPortfolio.vue'),
-      meta: {
-        pageTitle: 'Portfolio',
-        breadcrumb: [
-          {
-            text: 'Portfolio',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
       path: '/donation',
       name: 'donation',
       component: () => import('@core/layouts/components/Coffee.vue'),
@@ -98,20 +70,6 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/wallet/address',
-      name: 'addresses',
-      component: () => import('@/views/WalletAddressBook.vue'),
-      meta: {
-        pageTitle: 'Address Book',
-        breadcrumb: [
-          {
-            text: 'Address Book',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
       path: '/wallet/delegations',
       name: 'delegations',
       component: () => import('@/views/WalletDelegations.vue'),
@@ -139,6 +97,22 @@ const router = new VueRouter({
           },
           {
             text: 'Transaction History',
+          },
+        ],
+      },
+    },
+    {
+      path: '/wallet/votes',
+      name: 'myVotes',
+      component: () => import('@/views/WalletVotes.vue'),
+      meta: {
+        pageTitle: 'My Votes',
+        breadcrumb: [
+          {
+            text: 'Wallet',
+          },
+          {
+            text: 'My Votes',
           },
         ],
       },
@@ -292,20 +266,6 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/:chain/transactions',
-      name: 'transactions',
-      component: () => import('@/views/Transactions.vue'),
-      meta: {
-        pageTitle: 'Transactions',
-        breadcrumb: [
-          {
-            text: 'Transactions',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
       path: '/:chain/blocks/:height',
       name: 'block',
       component: () => import('@/views/Block.vue'),
@@ -337,76 +297,7 @@ const router = new VueRouter({
         ],
       },
     },
-    // custom modules for specified chains
-    // 1. cosmos
-    {
-      path: '/:chain/cosmos/trade',
-      name: 'gravity',
-      component: () => import('@/views/GravityPool.vue'),
-      meta: {
-        pageTitle: 'Gravity Pools',
-        breadcrumb: [
-          {
-            text: 'Gravity',
-            active: true,
-          },
-        ],
-      },
-    },
-    // 2. OSMOSIS
-    {
-      path: '/:chain/osmosis/trade/:poolid?',
-      name: 'osmosis-trade',
-      component: () => import('@/views/OsmosisTrade.vue'),
-      meta: {
-        pageTitle: 'Classic Trade',
-        breadcrumb: [
-          {
-            text: 'DEX',
-            active: true,
-          },
-          {
-            text: 'Classic Trade',
-            active: true,
-          },
-        ],
-      },
-    },
-    // common modules
-    {
-      path: '/user/login',
-      name: 'login',
-      component: () => import('@/views/Login.vue'),
-      meta: {
-        layout: 'full',
-      },
-    },
-    {
-      path: '/error/error-404',
-      name: 'error-404',
-      component: () => import('@/views/error/Error404.vue'),
-      meta: {
-        layout: 'full',
-      },
-    },
-    {
-      path: '/error/chain-not-exists',
-      name: 'chain-404',
-      component: () => import('@/views/error/ChainNotExist.vue'),
-      meta: {
-        layout: 'full',
-      },
-    },
-    {
-      path: '/index.php',
-      redirect: '/',
-    },
-    {
-      path: '*',
-      redirect: '/error/error-404',
-    },
-  ],
-})
+    )
 
 router.beforeEach((to, from, next) => {
   const c = to.params.chain

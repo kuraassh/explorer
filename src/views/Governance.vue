@@ -154,19 +154,19 @@
             </router-link>
             <b-button
               v-if="p.status===1"
-              v-b-modal.deposit-window
+              v-b-modal.operation-modal
               variant="primary"
               class="btn float-right mg-2"
-              @click="selectProposal(p.id, p.title)"
+              @click="selectProposal('GovDeposit',p.id, p.title)"
             >
               {{ $t('btn_deposit') }}
             </b-button>
             <b-button
               v-if="p.status===2"
-              v-b-modal.vote-window
+              v-b-modal.operation-modal
               variant="primary"
               class="btn float-right mg-2"
-              @click="selectProposal(p.id, p.title)"
+              @click="selectProposal('Vote',p.id, p.title)"
             >
               {{ $t('btn_vote') }}
             </b-button>
@@ -174,13 +174,22 @@
         </b-card>
       </b-col>
     </b-row>
-    <operation-vote-component
+    <b-row v-if="next">
+      <b-col>
+        <b-button
+          block
+          variant="outline-primary"
+          :disabled="loading"
+          @click="getList()"
+        >
+          Load More
+        </b-button>
+      </b-col>
+    </b-row>
+    <operation-modal
+      :type="operationModalType"
       :proposal-id="selectedProposalId"
-      :title="selectedTitle"
-    />
-    <operation-gov-deposit-component
-      :proposal-id="selectedProposalId"
-      :title="selectedTitle"
+      :proposal-title="selectedTitle"
     />
   </div>
 </template>
@@ -190,11 +199,9 @@ import {
   BCard, BCardTitle, BCardFooter, BButton, BProgressBar, BProgress, BBadge, BTooltip, BRow, BCol, VBModal,
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
-import { Proposal } from '@/libs/data'
 import { percent, tokenFormatter } from '@/libs/utils'
 import dayjs from 'dayjs'
-import OperationVoteComponent from './OperationVoteComponent.vue'
-import OperationGovDepositComponent from './OperationGovDepositComponent.vue'
+import OperationModal from '@/views/components/OperationModal/index.vue'
 
 export default {
   components: {
@@ -208,8 +215,7 @@ export default {
     BTooltip,
     BRow,
     BCol,
-    OperationVoteComponent,
-    OperationGovDepositComponent,
+    OperationModal,
   },
   directives: {
     'b-modal': VBModal,
@@ -219,18 +225,26 @@ export default {
     return {
       selectedProposalId: 0,
       selectedTitle: '',
-      proposals: [new Proposal()],
+      proposals: [],
       max: 1,
+      operationModalType: '',
+      next: '',
     }
   },
   mounted() {
     this.getList()
   },
   methods: {
+    formatType(v) {
+      const txt = String(v).replace('Proposal', '')
+      const index = txt.lastIndexOf('.')
+      return index > 0 ? txt.substring(index + 1) : txt
+    },
     percent: v => percent(v),
     formatDate: v => dayjs(v).format('YYYY-MM-DD'),
     formatToken: v => tokenFormatter(v, {}),
-    selectProposal(pid, title) {
+    selectProposal(modal, pid, title) {
+      this.operationModalType = modal
       this.selectedProposalId = Number(pid)
       this.selectedTitle = title
     },
@@ -258,7 +272,7 @@ export default {
 <style scoped>
 section {
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: nowrap; */
   justify-content: space-between;
 }
 .card {
@@ -267,7 +281,6 @@ section {
 .gov-wrapper {
     display: flex;
     justify-content:center;
-    align-items:flex-end;
 }
 .dark-layout .gov-wrapper .gov {
     background-color: #161d31;
