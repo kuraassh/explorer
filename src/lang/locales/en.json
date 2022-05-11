@@ -32,7 +32,7 @@
   "microtick": "Microtick",
   "odin": "ODIN",
   "chihuahua": "CHIHUAHUA",
-  
+
   "staking": "Staking",
   "governance": "Governance",
   "summary": "Summary",
@@ -40,7 +40,6 @@
   "blockchains": "Blockchains",
   "uptime": "Uptime",
   "statesync": "State Sync",
-  "trade": "Trade",
 
   "gravity": "Gravity(WIP)",
   "pools": "Pools(WIP)",
@@ -61,5 +60,5 @@
   "btn_deposit": "Deposit",
   "btn_detail": "Detail",
   "btn_back_list": "Back To List"
-  
+
 }
