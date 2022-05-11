@@ -297,41 +297,6 @@ const router = new VueRouter({
         ],
       },
     },
-    // custom modules for specified chains
-    // 1. cosmos
-    {
-      path: '/:chain/cosmos/trade',
-      name: 'gravity',
-      component: () => import('@/views/GravityPool.vue'),
-      meta: {
-        pageTitle: 'Gravity Pools',
-        breadcrumb: [
-          {
-            text: 'Gravity',
-            active: true,
-          },
-        ],
-      },
-    },
-    // 2. OSMOSIS
-    {
-      path: '/:chain/osmosis/trade/:poolid?',
-      name: 'osmosis-trade',
-      component: () => import('@/views/OsmosisTrade.vue'),
-      meta: {
-        pageTitle: 'Classic Trade',
-        breadcrumb: [
-          {
-            text: 'DEX',
-            active: true,
-          },
-          {
-            text: 'Classic Trade',
-            active: true,
-          },
-        ],
-      },
-    },
     // common modules
     {
       path: '/error/error-404',
