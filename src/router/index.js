@@ -296,6 +296,68 @@ const router = new VueRouter({
           },
         ],
       },
+    },
+    // custom modules for specified chains
+    // 1. cosmos
+    {
+      path: '/:chain/cosmos/trade',
+      name: 'gravity',
+      component: () => import('@/views/GravityPool.vue'),
+      meta: {
+        pageTitle: 'Gravity Pools',
+        breadcrumb: [
+          {
+            text: 'Gravity',
+            active: true,
+          },
+        ],
+      },
+    },
+    // 2. OSMOSIS
+    {
+      path: '/:chain/osmosis/trade/:poolid?',
+      name: 'osmosis-trade',
+      component: () => import('@/views/OsmosisTrade.vue'),
+      meta: {
+        pageTitle: 'Classic Trade',
+        breadcrumb: [
+          {
+            text: 'DEX',
+            active: true,
+          },
+          {
+            text: 'Classic Trade',
+            active: true,
+          },
+        ],
+      },
+    },
+    // common modules
+    {
+      path: '/error/error-404',
+      name: 'error-404',
+      component: () => import('@/views/error/Error404.vue'),
+      meta: {
+        layout: 'full',
+      },
+    },
+    {
+      path: '/error/chain-not-exists',
+      name: 'chain-404',
+      component: () => import('@/views/error/ChainNotExist.vue'),
+      meta: {
+        layout: 'full',
+      },
+    },
+    {
+      path: '/index.php',
+      redirect: '/',
+    },
+    {
+      path: '*',
+      redirect: '/error/error-404',
+    },
+  ],
 })
 
 router.beforeEach((to, from, next) => {
