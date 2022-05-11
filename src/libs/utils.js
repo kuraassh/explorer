@@ -197,23 +197,34 @@ function getHdPath(address) {
   return stringToPath(hdPath)
 }
 
+function getLedgerAppName(coinType) {
+  switch (coinType) {
+    case 60:
+      return 'Ethereum'
+    case 529:
+      return 'Secret'
+    case 852:
+      return 'Desmos'
+    case 118:
+    default:
+      return 'Cosmos'
+  }
+}
+
 export async function sign(device, chainId, signerAddress, messages, fee, memo, signerData) {
   let transport
   let signer
+  const hdpath = getHdPath(signerAddress)
+  const coinType = Number(hdpath[1])
+  const ledgerName = getLedgerAppName(coinType)
   switch (device) {
     case 'ledgerBle':
       transport = await TransportWebBLE.create()
-      signer = new LedgerSigner(transport, { hdPaths: [getHdPath(signerAddress)] })
+      signer = new LedgerSigner(transport, { hdPaths: [hdpath], ledgerAppName: ledgerName })
       break
     case 'ledgerUSB':
       transport = await TransportWebUSB.create()
-      signer = new LedgerSigner(transport, { hdPaths: [getHdPath(signerAddress)] })
-      break
-    case 'pingKMS':
-      if (!window.PingSigner) {
-        throw new Error('Please install Ping KMS extension')
-      }
-      signer = window.PingSigner
+      signer = new LedgerSigner(transport, { hdPaths: [hdpath], ledgerAppName: ledgerName })
       break
     case 'keplr':
     default:
@@ -236,7 +247,10 @@ export async function sign(device, chainId, signerAddress, messages, fee, memo, 
 
 export async function getLedgerAddress(transport = 'blu', hdPath = "m/44'/118/0'/0/0") {
   const trans = transport === 'usb' ? await TransportWebUSB.create() : await TransportWebBLE.create()
-  const signer = new LedgerSigner(trans, { hdPaths: [stringToPath(hdPath)] })
+  // extract Cointype from from HDPath
+  const coinType = Number(stringToPath(hdPath)[1])
+  const ledgerName = getLedgerAppName(coinType)
+  const signer = new LedgerSigner(trans, { hdPaths: [stringToPath(hdPath)], ledgerAppName: ledgerName })
   return signer.getAccounts()
 }
 
@@ -304,6 +318,9 @@ export function abbrMessage(msg) {
     })
     return output.join(', ')
   }
+  if (msg['@type']) {
+    return msg['@type'].substring(msg['@type'].lastIndexOf('.') + 1).replace('Msg', '')
+  }
   if (msg.typeUrl) {
     return msg.typeUrl.substring(msg.typeUrl.lastIndexOf('.') + 1).replace('Msg', '')
   }
@@ -326,6 +343,8 @@ export function isToken(value) {
   let is = false
   if (Array.isArray(value)) {
     is = value.findIndex(x => Object.keys(x).includes('denom')) > -1
+  } else {
+    is = Object.keys(value).includes('denom')
   }
   return is
 }
@@ -341,14 +360,14 @@ export function formatTokenDenom(tokenDenom) {
         if (asset) denom = asset.symbol
       }
     })
-    return denom.startsWith('ibc') ? `IBC...${denom.substring(denom.length - 3)}` : denom.toUpperCase()
+    return denom.length > 10 ? `${denom.substring(0, 7).toUpperCase()}..${denom.substring(denom.length - 3)}` : denom.toUpperCase()
   }
   return ''
 }
 
 export function getUnitAmount(amount, tokenDenom) {
   const denom = tokenDenom.denom_trace ? tokenDenom.denom_trace.base_denom : tokenDenom
-  let exp = 6
+  let exp = String(denom).startsWith('gravity') ? 18 : 6
   const config = Object.values(getLocalChains())
 
   config.forEach(x => {
@@ -367,11 +386,10 @@ export function numberWithCommas(x) {
   return parts.join('.')
 }
 
-export function formatTokenAmount(tokenAmount, fraction = 2, tokenDenom = 'uatom', format = true) {
+export function formatTokenAmount(tokenAmount, decimals = 2, tokenDenom = 'uatom', format = true) {
   const denom = tokenDenom.denom_trace ? tokenDenom.denom_trace.base_denom : tokenDenom
   let amount = 0
-
-  let exp = 6
+  let exp = String(denom).startsWith('gravity') ? 18 : 6
   const config = Object.values(getLocalChains())
 
   config.forEach(x => {
@@ -382,10 +400,10 @@ export function formatTokenAmount(tokenAmount, fraction = 2, tokenDenom = 'uatom
   })
   amount = Number(Number(tokenAmount)) / (10 ** exp)
   if (amount > 10) {
-    if (format) { return numberWithCommas(parseFloat(amount.toFixed(fraction))) }
-    return parseFloat(amount.toFixed(fraction))
+    if (format) { return numberWithCommas(parseFloat(amount.toFixed(decimals))) }
+    return parseFloat(amount.toFixed(decimals))
   }
-  return parseFloat(amount.toFixed(fraction))
+  return parseFloat(amount.toFixed(exp))
 }
 
 export function isTestnet() {
@@ -395,10 +413,11 @@ export function isTestnet() {
 
 export function formatToken(token, IBCDenom = {}, decimals = 2, withDenom = true) {
   if (token) {
+    const denom = IBCDenom[token.denom] || token.denom
     if (withDenom) {
-      return `${formatTokenAmount(token.amount, decimals, token.denom)} ${formatTokenDenom(IBCDenom[token.denom] || token.denom)}`
+      return `${formatTokenAmount(token.amount, decimals, denom)} ${formatTokenDenom(denom)}`
     }
-    return formatTokenAmount(token.amount, decimals, token.denom)
+    return formatTokenAmount(token.amount, decimals, denom)
   }
   return token
 }

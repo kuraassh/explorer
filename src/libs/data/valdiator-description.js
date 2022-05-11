@@ -1,8 +1,8 @@
 export default class ValidatorDescription {
   constructor() {
-    this.moniker = 'razumv | DOUBLE TOP'
-    this.identity = '0DD21F2C7157838C'
-    this.website = 'https://doubletop.io'
+    this.moniker = 'POSTCAPITALIST'
+    this.identity = 'CBFDCD0D9180878B'
+    this.website = 'https://blog.postcapitalist.io/'
     this.security_contact = 'string'
     this.details = 'string'
   }
