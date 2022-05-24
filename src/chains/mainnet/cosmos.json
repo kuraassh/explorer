@@ -1,10 +1,10 @@
 {
     "chain_name": "cosmos",
     "coingecko": "cosmos",
-    "api": "https://figment-cosmos.api.ping.pub, https://api.cosmos.network",
+    "api": "https://api.cosmos.network",
     "rpc": ["https://cosmoshub.validator.network:443"],
     "snapshot_provider": "",
-    "sdk_version": "0.44.3",
+    "sdk_version": "0.45.1",
     "coin_type": "118",
     "min_tx_fee": "800",
     "addr_prefix": "cosmos",
