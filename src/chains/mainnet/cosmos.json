@@ -4,7 +4,7 @@
     "api": "https://api.cosmos.network",
     "rpc": ["https://cosmoshub.validator.network:443"],
     "snapshot_provider": "",
-    "sdk_version": "0.45.1",
+    "sdk_version": "0.44.5",
     "coin_type": "118",
     "min_tx_fee": "800",
     "addr_prefix": "cosmos",
