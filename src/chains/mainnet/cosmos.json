@@ -1,7 +1,7 @@
 {
     "chain_name": "cosmos",
     "coingecko": "cosmos",
-    "api": "api.cosmos.network",
+    "api": "https://api.cosmos.network",
     "rpc": ["https://cosmoshub.validator.network:443"],
     "snapshot_provider": "",
     "sdk_version": "0.44.3",
