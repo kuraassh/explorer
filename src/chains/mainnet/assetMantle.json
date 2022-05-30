@@ -1,7 +1,7 @@
 {
     "chain_name": "AssetMantle",
     "coingecko": "",
-    "api": ["https://assetmantle.api.explorers.guru/api/"],
+    "api": ["https://rest.cosmos.directory/assetmantle"],
     "sdk_version": "0.45.1",
     "coin_type": "118",
     "min_tx_fee": "5000",
