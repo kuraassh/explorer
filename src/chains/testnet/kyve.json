@@ -7,7 +7,7 @@
     "assets": [{
         "base": "tkyve",
         "symbol": "KYVE",
-        "exponent": "6",
+        "exponent": "9",
         "coingecko_id": "",
         "logo": "https://avatars.githubusercontent.com/u/78351592?s=200&v=4"
     }],
