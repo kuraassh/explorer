@@ -1,7 +1,7 @@
 
 {
     "chain_name": "certik",
-    "api":["https://azuredragon.noopsbycertik.com", "https://certik.postcapitalist.io"],
+    "api":["https://certik.postcapitalist.io"],
     "sdk_version": "0.42.9",
     "coin_type": "118",
     "min_tx_fee": "5000",
