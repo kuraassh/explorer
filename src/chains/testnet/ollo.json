@@ -1,0 +1,16 @@
+{
+    "chain_name": "Ollo",
+    "api": ["https://ollo-test.postcapitalist.io/"],
+    "sdk_version": "0.44.5",
+    "coin_type": "118",
+    "min_tx_fee": "300",
+    "assets": [{
+        "base": "utollo",
+        "symbol": "tollo",
+        "exponent": "6",
+        "coingecko_id": "",
+        "logo": "https://user-images.githubusercontent.com/50621007/192699071-461d8ff6-6ddf-4d4f-aba7-d3ddcc4a5563.png"
+    }],
+    "addr_prefix": "ollo",
+    "logo": "https://user-images.githubusercontent.com/50621007/192699071-461d8ff6-6ddf-4d4f-aba7-d3ddcc4a5563.png"
+}
