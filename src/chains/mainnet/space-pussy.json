@@ -1,7 +1,7 @@
 {
     "chain_name": "space-pussy",
     "coingecko": "",
-    "api": ["https://space-pussy.postcapitalist.io/"],
+    "api": ["https://pussy.postcapitalist.io/", "https://space-pussy.postcapitalist.io/"],
     "sdk_version": "0.44.3",
     "coin_type": "118",
     "min_tx_fee": "5000",
