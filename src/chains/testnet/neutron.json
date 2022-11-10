@@ -1,6 +1,6 @@
 {
     "chain_name": "neutron",
-    "api": "https://rest.cosmos.directory/cosmoshub",
+    "api": "https://neutron.postcapitalist.io/",
     "snapshot_provider": "",
     "sdk_version": "0.44.5",
     "coin_type": "118",
