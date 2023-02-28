@@ -1,6 +1,6 @@
 {
     "chain_name": "kyve",
-    "api": ["https://kyve-test.postcapitalist.io/"],
+    "api": ["https://api-explorer.kaon.kyve.network/", "https://kyve-test.postcapitalist.io/"],
     "sdk_version": "0.46.8",
     "coin_type": "118",
     "min_tx_fee": "300",
